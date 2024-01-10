@@ -7,6 +7,7 @@ sio = socketio.Client()
 class Session:
     def __init__(self):
         self.current_directory = os.getcwd()
+        self.exit_requested = False
 
 session = Session()
 
@@ -15,6 +16,7 @@ def on_message(msg):
     global session
 
     if msg.lower() == 'exit':
+        session.exit_requested = True
         sio.disconnect()
         return
 
@@ -40,8 +42,9 @@ def execute_command(command):
 sio.connect('http://localhost:3000')
 
 try:
-    while True:
+    while not session.exit_requested:
         pass
 except KeyboardInterrupt:
-    sio.emit('message', 'exit')
+    pass
+finally:
     sio.disconnect()
