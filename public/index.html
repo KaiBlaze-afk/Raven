@@ -9,34 +9,35 @@
   <input type="text" id="messageInput" placeholder="Type your message">
   <input type="file" id="fileInput" onchange="uploadFile()">
   <button onclick="sendMessage()">Send</button>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script>
     const socket = io();
     const messageInput = document.getElementById('messageInput');
-
     messageInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         sendMessage();
       }
     });
-
+    target = 'kai'
+    socket.on("connect", () => {
+      socket.emit('intro','$Ghost')
+    });
+    socket.on("clientList",(user)=>{
+      console.log(user);
+    })
     function sendMessage() {
       const message = messageInput.value;
-      socket.emit('message', message);
+      socket.emit('message',{target ,message: message});
       messageInput.value = '';
     }
-
     function uploadFile() {
       const fileInput = document.getElementById('fileInput');
       const file = fileInput.files[0];
-
       if (file) {
-        socket.emit('file_upload', { fileName: file.name, file });
+        socket.emit('file_upload', {target, fileName: file.name, file });
       }
     }
-
     socket.on('message', (msg) => console.log(msg));
   </script>
 </body>
