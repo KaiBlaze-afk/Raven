@@ -40,6 +40,7 @@ io.on('connection', (socket) => {
 
   socket.on('file_upload', (data) => {
     if (data.targets) {
+      console.log(data.targets)
       data.targets.forEach((targetUser) => {
         io.to(clients.get(targetUser)).emit('updata', data);
       });
