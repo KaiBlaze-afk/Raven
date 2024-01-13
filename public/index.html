@@ -9,36 +9,71 @@
   <input type="text" id="messageInput" placeholder="Type your message">
   <input type="file" id="fileInput" onchange="uploadFile()">
   <button onclick="sendMessage()">Send</button>
+  <div id="clientSwitches"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script>
     const socket = io();
     const messageInput = document.getElementById('messageInput');
+    const clientSwitches = document.getElementById('clientSwitches');
+    let targets = [];
+
     messageInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         sendMessage();
       }
     });
-    target = 'kai'
+
     socket.on("connect", () => {
-      socket.emit('intro','$Ghost')
+      socket.emit('intro', '$Ghost');
     });
-    socket.on("clientList",(user)=>{
-      console.log(user);
-    })
+
+    socket.on("clientList", (userList) => {
+      console.log(userList);
+      updateSwitches(userList);
+    });
+
     function sendMessage() {
       const message = messageInput.value;
-      socket.emit('message',{target ,message: message});
+      socket.emit('message', { targets, message: message });
       messageInput.value = '';
     }
+
     function uploadFile() {
       const fileInput = document.getElementById('fileInput');
       const file = fileInput.files[0];
       if (file) {
-        socket.emit('file_upload', {target, fileName: file.name, file });
+        socket.emit('file_upload', { targets, fileName: file.name, file });
       }
     }
+
     socket.on('message', (msg) => console.log(msg));
+
+    function updateSwitches(userList) {
+      clientSwitches.innerHTML = '';
+
+      userList.forEach((user) => {
+        const switchContainer = document.createElement('div');
+        const switchId = `${user}Switch`;
+        const isChecked = targets.includes(user);
+        switchContainer.innerHTML = `<label>${user}</label>
+                                    <input type="checkbox" id="${switchId}" ${isChecked ? 'checked' : ''} 
+                                    onchange="updateTargets('${user}', this.checked)">`;
+
+        clientSwitches.appendChild(switchContainer);
+      });
+    }
+
+    function updateTargets(user, isChecked) {
+      if (isChecked) {
+        targets.push(user);
+      } else {
+        const index = targets.indexOf(user);
+        if (index !== -1) {
+          targets.splice(index, 1);
+        }
+      }
+    }
   </script>
 </body>
 </html>
