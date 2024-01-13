@@ -20,8 +20,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message', (msg) => {
-    if (msg.target) {
-      io.to(clients.get(msg.target)).emit('message', msg.message);
+    console.log(msg);
+    if (msg.targets) {
+      msg.targets.forEach((targetUser) => {
+        io.to(clients.get(targetUser)).emit('message', msg.message);
+      });
     } else {
       io.to(clients.get('$Ghost')).emit('message', msg);
     }
@@ -34,18 +37,22 @@ io.on('connection', (socket) => {
       console.log(`File ${file_name} received and saved in uploads folder.`);
     });
   });
-  socket.on('file_upload', (data) => io.to(clients.get(data.target)).emit('updata', data));
+
+  socket.on('file_upload', (data) => {
+    if (data.targets) {
+      data.targets.forEach((targetUser) => {
+        io.to(clients.get(targetUser)).emit('updata', data);
+      });
+    }
+  });
 
   socket.on('disconnect', () => {
     const disconnectedUser = Array.from(clients.keys()).find(
       (user) => clients.get(user) === socket.id
     );
-
     if (disconnectedUser) {
       clients.delete(disconnectedUser);
-      console.log(`${disconnectedUser} disconnected`);
     }
-
     io.to(clients.get('$Ghost')).emit('clientList', Array.from(clients.keys()));
   });
 });
