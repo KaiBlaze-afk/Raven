@@ -3,7 +3,7 @@ import subprocess
 import os
 
 sio = socketio.Client()
-url = 'http://localhost:3000'
+url = 'http://raveneye.glitch.me/'
 
 class Session:
     def __init__(self):
