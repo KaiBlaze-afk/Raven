@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Socket.io Example</title>
+  <title>RavenEye Admin</title>
 </head>
 <body>
   <input type="text" id="messageInput" placeholder="Type your message">
@@ -53,14 +53,15 @@
       clientSwitches.innerHTML = '';
 
       userList.forEach((user) => {
-        const switchContainer = document.createElement('div');
-        const switchId = `${user}Switch`;
-        const isChecked = targets.includes(user);
-        switchContainer.innerHTML = `<label>${user}</label>
+        if(user!='$Ghost'){
+          const switchContainer = document.createElement('div');
+          const switchId = `${user}Switch`;
+          const isChecked = targets.includes(user);
+          switchContainer.innerHTML = `<label>${user}</label>
                                     <input type="checkbox" id="${switchId}" ${isChecked ? 'checked' : ''} 
                                     onchange="updateTargets('${user}', this.checked)">`;
-
-        clientSwitches.appendChild(switchContainer);
+          clientSwitches.appendChild(switchContainer);
+        }
       });
     }
 
