@@ -3,8 +3,9 @@ import subprocess
 import os
 
 sio = socketio.Client()
-url = 'http://raveneye.glitch.me/'
-
+on = 'http://raveneye.glitch.me/'
+off = 'http://localhost:3000/'
+url = on
 class Session:
     def __init__(self):
         self.current_directory = os.getcwd()
