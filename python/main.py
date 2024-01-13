@@ -1,3 +1,6 @@
+import importlib
+try: __import__('socketio')
+except: subprocess.check_call(['pip', 'install', 'python-socketio websocket-client'])
 import socketio
 import subprocess
 import os
