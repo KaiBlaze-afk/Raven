@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RavenEye Admin</title>
 </head>
 <body>
-  <input type="text" id="messageInput" placeholder="Type your message">
-  <input type="file" id="fileInput" onchange="uploadFile()">
+  <input type="text" id="messageInput" placeholder="Type your message" />
+  <input type="file" id="fileInput" onchange="uploadFile()" />
   <button onclick="sendMessage()">Send</button>
   <div id="clientSwitches"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script>
     const socket = io();
-    const messageInput = document.getElementById('messageInput');
-    const clientSwitches = document.getElementById('clientSwitches');
+    const messageInput = document.getElementById("messageInput");
+    const clientSwitches = document.getElementById("clientSwitches");
     let targets = [];
 
     messageInput.addEventListener("keypress", (e) => {
@@ -25,7 +25,7 @@
     });
 
     socket.on("connect", () => {
-      socket.emit('intro', '$Ghost');
+      socket.emit("intro", "$Ghost");
     });
 
     socket.on("clientList", (userList) => {
@@ -35,31 +35,42 @@
 
     function sendMessage() {
       const message = messageInput.value;
-      socket.emit('message', { targets, message: message });
-      messageInput.value = '';
+      socket.emit("message", { targets, message });
+      messageInput.value = "";
     }
 
     function uploadFile() {
-      const fileInput = document.getElementById('fileInput');
+      const fileInput = document.getElementById("fileInput");
       const file = fileInput.files[0];
       if (file) {
-        socket.emit('file_upload', { targets, fileName: file.name, file });
+        socket.emit("file_upload", { targets, fileName: file.name, file });
       }
     }
 
-    socket.on('message', (msg) => console.log(msg));
+    socket.on("message", (msg) => console.log(msg));
 
     function updateSwitches(userList) {
-      clientSwitches.innerHTML = '';
+      clientSwitches.innerHTML = "";
 
       userList.forEach((user) => {
-        if(user!='$Ghost'){
-          const switchContainer = document.createElement('div');
+        if (user !== "$Ghost") {
+          const switchContainer = document.createElement("div");
           const switchId = `${user}Switch`;
           const isChecked = targets.includes(user);
-          switchContainer.innerHTML = `<label>${user}</label>
-                                    <input type="checkbox" id="${switchId}" ${isChecked ? 'checked' : ''} 
-                                    onchange="updateTargets('${user}', this.checked)">`;
+
+          const label = document.createElement("label");
+          label.textContent = user;
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.id = switchId;
+          checkbox.checked = isChecked;
+          checkbox.onchange = function () {
+            updateTargets(user, this.checked);
+          };
+
+          switchContainer.appendChild(label);
+          switchContainer.appendChild(checkbox);
           clientSwitches.appendChild(switchContainer);
         }
       });
@@ -73,7 +84,7 @@
         if (index !== -1) {
           targets.splice(index, 1);
         }
-      }
+      }console.log(user)
     }
   </script>
 </body>
