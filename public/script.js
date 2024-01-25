@@ -36,11 +36,20 @@ function uploadFile() {
 }
 
 socket.on("message", (msg) => {newres("Response:\n"+msg)});
+socket.on("fileurl", (fileurl) => {newfile(fileurl)});
 
 function newres(msg) {
     const msgbox = document.createElement("div");
     msgbox.classList+='msgbox';
     msgbox.innerText = msg;
+    let resbox = document.getElementById('response');
+    resbox.insertBefore(msgbox,resbox.firstChild);
+}
+
+function newfile(fileaddr){
+    const msgbox = document.createElement("div");
+    msgbox.classList+='msgbox';
+    msgbox.innerHTML = "<a href='../uploads/"+fileaddr+"' download>Download "+fileaddr+"</a>";
     let resbox = document.getElementById('response');
     resbox.insertBefore(msgbox,resbox.firstChild);
 }
