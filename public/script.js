@@ -23,6 +23,7 @@ socket.on("clientList", (userList) => {
 function sendMessage() {
   const message = messageInput.value;
   socket.emit("message", { targets, message });
+  newres("Ghost$ "+message);
   messageInput.value = "";
 }
 
@@ -34,7 +35,7 @@ function uploadFile() {
   }
 }
 
-socket.on("message", (msg) => {newres(msg)});
+socket.on("message", (msg) => {newres("Response:\n"+msg)});
 
 function newres(msg) {
     const msgbox = document.createElement("div");
