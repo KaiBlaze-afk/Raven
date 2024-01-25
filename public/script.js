@@ -34,7 +34,13 @@ function uploadFile() {
   }
 }
 
-socket.on("message", (msg) => console.log(msg));
+socket.on("message", (msg) => {newres(msg)});
+
+function newres(msg) {
+    const msgbox = document.createElement("div");
+    msgbox.innerText = msg;
+    document.getElementById('response').appendChild(msgbox)
+}
 
 function updateSwitches(userList) {
   clientSwitches.innerHTML = "";

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RavenEye Admin Control</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script defer src="./script.js"></script>
 </head>
 <body>
@@ -12,7 +13,9 @@
   <input type="file" id="fileInput" onchange="uploadFile()" />
   <button onclick="sendMessage()">Send</button>
   <div id="clientSwitches"></div>
-  <div id="response" class="response">Response: <div id="output"></div> </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <div id="response" class="response">
+    Response: 
+    <div id="output">This is output</div> 
+</div>
 </body>
 </html>

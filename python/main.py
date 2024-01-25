@@ -9,7 +9,7 @@ import socketio
 sio = socketio.Client()
 on = 'http://raveneye.glitch.me/'
 off = 'http://localhost:3000/'
-url = on
+url = off
 class Session:
     def __init__(self):
         self.current_directory = os.getcwd()
