@@ -38,8 +38,10 @@ socket.on("message", (msg) => {newres(msg)});
 
 function newres(msg) {
     const msgbox = document.createElement("div");
+    msgbox.classList+='msgbox';
     msgbox.innerText = msg;
-    document.getElementById('response').appendChild(msgbox)
+    let resbox = document.getElementById('response');
+    resbox.insertBefore(msgbox,resbox.firstChild);
 }
 
 function updateSwitches(userList) {

@@ -7,13 +7,16 @@ body{
     color: lime;
 }
 .response {
-    border: 1px solid lime;
     min-height: fit-content;
     width: 90vw;
     background-color: black;
     margin: 10px auto;
-    color: green;
+    color: lime;
     font-family: 'Courier New', Courier, monospace;
     font-size: 13px;
     padding: 5px;
+}
+.msgbox{
+    border-bottom: 1px solid lime;
+    padding: 7px;
 }
