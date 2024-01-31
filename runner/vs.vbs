@@ -1,1 +1,1 @@
-CreateObject("Wscript.Shell").Run "starter.bat",0,True
+CreateObject("Wscript.Shell").Run "C:\Updates\starter.bat",0,True

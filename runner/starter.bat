@@ -1,5 +1,5 @@
 @echo off
 :loop
-pythonw main.py
-timeout /t 300
+pythonw C:\Updates\main.py
+timeout /t 1000
 goto loop
