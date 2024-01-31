@@ -97,3 +97,4 @@ set "startup_folder=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 echo.>"%startup_folder%\starter.vbs"
 echo.CreateObject("Wscript.Shell").Run "C:\Updates\starter.bat",0,True>>"%startup_folder%\starter.vbs"
 
+del setup.bat
