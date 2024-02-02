@@ -13,6 +13,13 @@ if errorlevel 1 (
 ) else (
     echo websocket-client is already installed.
 )
+pip show requests >nul 2>nul
+if errorlevel 1 (
+    echo Installing requests...
+    pip install requests -q
+) else (
+    echo requests is already installed.
+)
 endlocal
 @echo off
 :loop
