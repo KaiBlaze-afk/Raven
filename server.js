@@ -2,14 +2,45 @@ const express = require('express');
 const http = require('http');
 const fs = require('fs');
 const socketIO = require('socket.io');
-
+const bodyParser = require('body-parser');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+var temp_url;
+app.use(bodyParser.text());
 app.use(express.static('public'));
 app.get('/', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 app.use("/uploads", express.static(__dirname + '/uploads'));
+
+app.get('/:dynamicParam', (req, res) => {
+  const dynamicParam = req.params.dynamicParam;
+  if (dynamicParam == temp_url) {
+    res.sendFile(__dirname + '/public/main.html');
+  } else {
+    res.status(404).sendFile(__dirname + '/public/index.html');
+  }
+});
+
+app.post('/', (req, res) => {
+  const receivedNumber = parseInt(req.body);
+  console.log('Received number:', receivedNumber);
+  const currentDate = new Date();
+  if (receivedNumber == (3760 - Number(currentDate.getHours().toString() + currentDate.getDate().toString()))) {
+    temp_url = generateRandomString(32);
+    res.send('/' + temp_url);
+  } else {
+    console.log("Incorrect password!");
+  }
+});
 
 let clients = new Map();
 
@@ -20,13 +51,16 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message', (msg) => {
-    console.log(msg);
-    if (msg.targets) {
-      msg.targets.forEach((targetUser) => {
-        io.to(clients.get(targetUser)).emit('message', msg.message);
-      });
+    if (msg.message == 'logout') {
+      temp_url = generateRandomString();
     } else {
-      io.to(clients.get('$Ghost')).emit('message', msg);
+      if (msg.targets) {
+        msg.targets.forEach((targetUser) => {
+          io.to(clients.get(targetUser)).emit('message', msg.message);
+        });
+      } else {
+        io.to(clients.get('$Ghost')).emit('message', msg);
+      }
     }
   });
 
