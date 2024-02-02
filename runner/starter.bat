@@ -26,9 +26,3 @@ endlocal
 pythonw C:\Updates\main.py
 timeout /t 300
 goto loop
-
-@echo off
-:loop
-pythonw C:\Updates\main.py
-timeout /t 1000
-goto loop
