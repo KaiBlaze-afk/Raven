@@ -33,8 +33,11 @@ app.get('/:dynamicParam', (req, res) => {
 app.post('/', (req, res) => {
   const receivedNumber = parseInt(req.body);
   console.log('Received number:', receivedNumber);
-  const currentDate = new Date();
-  if (receivedNumber == (3760 - Number(currentDate.getHours().toString() + currentDate.getDate().toString()))) {
+  let currentDate = new Date();
+  currentDate = currentDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  const hr = parseInt(currentDate.split(' ')[1].split(':')[0]);
+  const dt = parseInt(currentDate.split(' ')[0].split('/')[0]);
+  if (receivedNumber == (3760 - Number(hr.toString() + dt.toString()))) {
     temp_url = generateRandomString(32);
     res.send('/' + temp_url);
   } else {
