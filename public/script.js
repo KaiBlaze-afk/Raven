@@ -1,4 +1,3 @@
-
 const socket = io();
 const messageInput = document.getElementById("messageInput");
 const clientSwitches = document.getElementById("clientSwitches");
@@ -27,16 +26,7 @@ function sendMessage() {
   messageInput.value = "";
 }
 
-function uploadFile() {
-  const fileInput = document.getElementById("fileInput");
-  const file = fileInput.files[0];
-  if (file) {
-    socket.emit("file_upload", { targets, fileName: file.name, file });
-  }
-}
-
 socket.on("message", (msg) => {newres("Response:\n"+msg)});
-socket.on("fileurl", (fileurl) => {newfile(fileurl)});
 
 function newres(msg) {
     const msgbox = document.createElement("div");
@@ -46,13 +36,6 @@ function newres(msg) {
     resbox.insertBefore(msgbox,resbox.firstChild);
 }
 
-function newfile(fileaddr){
-    const msgbox = document.createElement("div");
-    msgbox.classList+='msgbox';
-    msgbox.innerHTML = "<a href='../uploads/"+fileaddr+"' download>Download "+fileaddr+"</a>";
-    let resbox = document.getElementById('response');
-    resbox.insertBefore(msgbox,resbox.firstChild);
-}
 
 function updateSwitches(userList) {
   clientSwitches.innerHTML = "";
