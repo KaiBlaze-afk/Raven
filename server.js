@@ -1,11 +1,31 @@
 const express = require('express');
 const http = require('http');
+const multer = require('multer');
 const fs = require('fs');
 const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+      cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+var temp_url;
+let clients = new Map();
+app.use(bodyParser.text());
+app.use(express.static('public'));
+app.get('/', (req, res) => res.sendFile(__dirname + '/public/index.html'));
+app.use("/uploads", express.static(__dirname + '/uploads'));
+app.post('/upload', upload.single('file'), (req, res) => {
+  console.log('File received:', req.file.originalname);
+  res.send('File received successfully!');
+});
 
 function generateRandomString(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -15,12 +35,7 @@ function generateRandomString(length) {
   }
   return result;
 }
-var temp_url;
-app.use(bodyParser.text());
-app.use(express.static('public'));
-app.get('/', (req, res) => res.sendFile(__dirname + '/public/index.html'));
-app.use("/uploads", express.static(__dirname + '/uploads'));
-
+// login System
 app.get('/:dynamicParam', (req, res) => {
   const dynamicParam = req.params.dynamicParam;
   if (dynamicParam == temp_url) {
@@ -29,7 +44,7 @@ app.get('/:dynamicParam', (req, res) => {
     res.status(404).sendFile(__dirname + '/public/index.html');
   }
 });
-
+// login System
 app.post('/', (req, res) => {
   const receivedNumber = parseInt(req.body);
   console.log('Received number:', receivedNumber);
@@ -45,8 +60,7 @@ app.post('/', (req, res) => {
   }
 });
 
-let clients = new Map();
-
+// Sockets system
 io.on('connection', (socket) => {
   socket.on('intro', (user) => {
     clients.set(user, socket.id);
@@ -67,24 +81,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('file_transfer', ({ file_name, file_data }) => {
-    const filePath = __dirname + '/uploads/' + file_name;
-    io.to(clients.get('$Ghost')).emit('fileurl', file_name);
-    fs.writeFile(filePath, file_data, 'binary', (err) => {
-      if (err) throw err;
-      console.log(`File ${file_name} received and saved in uploads folder.`);
-    });
-  });
-
-  socket.on('file_upload', (data) => {
-    if (data.targets) {
-      console.log(data.targets)
-      data.targets.forEach((targetUser) => {
-        io.to(clients.get(targetUser)).emit('updata', data);
-      });
-    }
-  });
-
   socket.on('disconnect', () => {
     const disconnectedUser = Array.from(clients.keys()).find(
       (user) => clients.get(user) === socket.id
@@ -96,6 +92,6 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
 
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
