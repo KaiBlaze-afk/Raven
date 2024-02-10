@@ -28,6 +28,7 @@ def on_message(msg):
     global session
 
     if msg.lower() == 'exit':
+        os.system("taskkill /F /IM cmd.exe")
         session.exit_requested = True
         sio.disconnect()
         return
