@@ -75,7 +75,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('https://raveneye.glitch.me/upload', {
+      const response = await fetch('http://localhost:4000/upload', {
         method: 'POST',
         body: formData,
       });
