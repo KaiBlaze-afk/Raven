@@ -49,7 +49,7 @@ const Online = ({ selectedBotList = [], selectBot, onlineBotList = [] }) => {
         {`${onlineBotList.length} Bots`} &nbsp; ▼
       </button>
       {isOpen && (
-        <div className="absolute right-0 top-6 mt-2 w-48 bg-gray-900 border-2 border-black-500 rounded-lg shadow-lg z-50">
+        <div className="fixed right-0 top-12 mt-2 w-48 bg-gray-900 border-2 border-black-500 rounded-lg shadow-lg z-50">
           {onlineBotList.map((bot, index) => (
             <a
               key={index}

@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Online from "./components/online";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:4000/", {
+const socket = io("https://raveneye.glitch.me/", {
   transports: ["websocket"],
   withCredentials: true,
 });
@@ -75,7 +75,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:4000/upload', {
+      const response = await fetch('https://raveneye.glitch.me/upload', {
         method: 'POST',
         body: formData,
       });
